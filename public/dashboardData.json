@@ -1,0 +1,543 @@
+[
+  {
+    "user": {
+      "name": "Rahul Sharma",
+      "customerId": "CUST984512",
+      "crn": "CRN1234567890",
+      "mobile": "+91-9876543210",
+      "email": "rahul.sharma@example.com",
+      "password": "Rahul@Bank2026",
+      "upi": "rahulsharma@okicici",
+      "mpin": "1122"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "HDFC Bank",
+          "accountType": "Savings",
+          "accountNumber": "123456789012",
+          "mpin": "5588"
+        },
+        "balance": {
+          "available": 82450.75,
+          "ledger": 83000.75,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:00"
+        },
+        "transactions": [
+          { "id": "TXN101", "date": "2026-01-26", "title": "Rent Payment", "type": "Debit", "amount": 15000, "category": "Housing" },
+          { "id": "TXN102", "date": "2026-01-24", "title": "Salary Credit", "type": "Credit", "amount": 45000, "category": "Salary" },
+          { "id": "TXN103", "date": "2026-01-22", "title": "Electricity Bill", "type": "Debit", "amount": 2100, "category": "Utilities" },
+          { "id": "TXN104", "date": "2026-01-20", "title": "Grocery Store", "type": "Debit", "amount": 1200, "category": "Shopping" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "ICICI Bank",
+          "accountType": "Current",
+          "accountNumber": "987654321098",
+          "mpin": "9988"
+        },
+        "balance": {
+          "available": 12500.50,
+          "ledger": 12500.50,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 09:30"
+        },
+        "transactions": [
+          { "id": "TXN201", "date": "2026-01-27", "title": "Tea & Snacks", "type": "Debit", "amount": 80, "category": "Food" },
+          { "id": "TXN202", "date": "2026-01-25", "title": "Mobile Recharge", "type": "Debit", "amount": 719, "category": "Bills" },
+          { "id": "TXN203", "date": "2026-01-23", "title": "Interest Credit", "type": "Credit", "amount": 150, "category": "Income" },
+          { "id": "TXN204", "date": "2026-01-21", "title": "Petrol Fillup", "type": "Debit", "amount": 500, "category": "Transport" }
+        ]
+      }
+    ],
+    "note": "Donon accounts ke balances aur MPINs alag hain. Login details (CRN/Password) same hain."
+  },
+  {
+    "user": {
+      "name": "Priya Patel",
+      "customerId": "CUST123456",
+      "crn": "CRN9876543210",
+      "mobile": "+91-9876543211",
+      "email": "priya.patel@example.com",
+      "password": "Priya@Secure2026",
+      "upi": "priyapatelg@okicici",
+      "mpin": "8927"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "SBI Bank",
+          "accountType": "Savings",
+          "accountNumber": "111222333444",
+          "mpin": "1115"
+        },
+        "balance": {
+          "available": 125430.25,
+          "ledger": 126000.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:45"
+        },
+        "transactions": [
+          { "id": "TXN301", "date": "2026-01-26", "title": "Freelance Payment", "type": "Credit", "amount": 75000, "category": "Income" },
+          { "id": "TXN302", "date": "2026-01-25", "title": "UPI Transfer", "type": "Debit", "amount": 2500, "category": "Transfer" },
+          { "id": "TXN303", "date": "2026-01-24", "title": "Online Shopping", "type": "Debit", "amount": 4589, "category": "Shopping" },
+          { "id": "TXN304", "date": "2026-01-23", "title": "ATM Withdrawal", "type": "Debit", "amount": 5000, "category": "Cash" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "Axis Bank",
+          "accountType": "Current",
+          "accountNumber": "555666777888",
+          "mpin": "7744"
+        },
+        "balance": {
+          "available": 85000.00,
+          "ledger": 85500.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:30"
+        },
+        "transactions": [
+          { "id": "TXN305", "date": "2026-01-27", "title": "Client Payment", "type": "Credit", "amount": 30000, "category": "Business" },
+          { "id": "TXN306", "date": "2026-01-26", "title": "Office Supplies", "type": "Debit", "amount": 2500, "category": "Business" },
+          { "id": "TXN307", "date": "2026-01-25", "title": "Interest Credit", "type": "Credit", "amount": 75, "category": "Income" },
+          { "id": "TXN308", "date": "2026-01-24", "title": "Taxi Fare", "type": "Debit", "amount": 350, "category": "Transport" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Amit Kumar",
+      "customerId": "CUST789123",
+      "crn": "CRN4567891234",
+      "mobile": "+91-9123456789",
+      "email": "amit.kumar@example.com",
+      "password": "Amit@Bank2026!",
+      "upi": "amit89@okhdfcbank",
+      "mpin": "3741"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "PNB Bank",
+          "accountType": "Current",
+          "accountNumber": "222333444555",
+          "mpin": "2255"
+        },
+        "balance": {
+          "available": 567890.00,
+          "ledger": 568500.50,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:20"
+        },
+        "transactions": [
+          { "id": "TXN401", "date": "2026-01-26", "title": "Business Payment", "type": "Credit", "amount": 125000, "category": "Business" },
+          { "id": "TXN402", "date": "2026-01-25", "title": "Vendor Payment", "type": "Debit", "amount": 85000, "category": "Business" },
+          { "id": "TXN403", "date": "2026-01-24", "title": "Bank Charges", "type": "Debit", "amount": 250, "category": "Fees" },
+          { "id": "TXN404", "date": "2026-01-23", "title": "Interest Credit", "type": "Credit", "amount": 450, "category": "Income" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "IDBI Bank",
+          "accountType": "Savings",
+          "accountNumber": "999888777666",
+          "mpin": "6633"
+        },
+        "balance": {
+          "available": 125000.00,
+          "ledger": 125500.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:15"
+        },
+        "transactions": [
+          { "id": "TXN405", "date": "2026-01-27", "title": "Salary Credit", "type": "Credit", "amount": 75000, "category": "Salary" },
+          { "id": "TXN406", "date": "2026-01-26", "title": "Grocery Shopping", "type": "Debit", "amount": 3200, "category": "Shopping" },
+          { "id": "TXN407", "date": "2026-01-25", "title": "Mobile Recharge", "type": "Debit", "amount": 999, "category": "Bills" },
+          { "id": "TXN408", "date": "2026-01-24", "title": "ATM Cash", "type": "Debit", "amount": 10000, "category": "Cash" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Neha Gupta",
+      "customerId": "CUST456789",
+      "crn": "CRN3216549870",
+      "mobile": "+91-9988776655",
+      "email": "neha.gupta@example.com",
+      "password": "Neha#GuptaSecure26",
+      "upi": "nehagupta@okaxis",
+      "mpin": "6294"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "Canara Bank",
+          "accountType": "Savings",
+          "accountNumber": "333444555666",
+          "mpin": "4477"
+        },
+        "balance": {
+          "available": 234567.80,
+          "ledger": 235000.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 09:45"
+        },
+        "transactions": [
+          { "id": "TXN501", "date": "2026-01-26", "title": "Salary Credit", "type": "Credit", "amount": 85000, "category": "Salary" },
+          { "id": "TXN502", "date": "2026-01-25", "title": "Food Delivery", "type": "Debit", "amount": 450, "category": "Food" },
+          { "id": "TXN503", "date": "2026-01-24", "title": "Electricity Bill", "type": "Debit", "amount": 1800, "category": "Utilities" },
+          { "id": "TXN504", "date": "2026-01-23", "title": "Interest Credit", "type": "Credit", "amount": 120, "category": "Income" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "Bank of Baroda",
+          "accountType": "Current",
+          "accountNumber": "777888999000",
+          "mpin": "9900"
+        },
+        "balance": {
+          "available": 89000.25,
+          "ledger": 89500.25,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:00"
+        },
+        "transactions": [
+          { "id": "TXN505", "date": "2026-01-27", "title": "Client Invoice", "type": "Credit", "amount": 45000, "category": "Business" },
+          { "id": "TXN506", "date": "2026-01-26", "title": "Office Rent", "type": "Debit", "amount": 25000, "category": "Business" },
+          { "id": "TXN507", "date": "2026-01-25", "title": "Petrol", "type": "Debit", "amount": 1200, "category": "Transport" },
+          { "id": "TXN508", "date": "2026-01-24", "title": "Bank Fee", "type": "Debit", "amount": 100, "category": "Fees" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Rajesh Mehta",
+      "customerId": "CUST654321",
+      "crn": "CRN7894561230",
+      "mobile": "+91-8877665544",
+      "email": "rajesh.mehta@example.com",
+      "password": "Rajesh@2026Bank",
+      "upi": "rajesh.g@okicici",
+      "mpin": "4185"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "Union Bank",
+          "accountType": "Current",
+          "accountNumber": "444555666777",
+          "mpin": "7788"
+        },
+        "balance": {
+          "available": 789654.32,
+          "ledger": 790000.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:50"
+        },
+        "transactions": [
+          { "id": "TXN601", "date": "2026-01-26", "title": "Export Receipt", "type": "Credit", "amount": 245000, "category": "Business" },
+          { "id": "TXN602", "date": "2026-01-25", "title": "Import Payment", "type": "Debit", "amount": 150000, "category": "Business" },
+          { "id": "TXN603", "date": "2026-01-24", "title": "Commission", "type": "Credit", "amount": 5000, "category": "Income" },
+          { "id": "TXN604", "date": "2026-01-23", "title": "Travel Expense", "type": "Debit", "amount": 8500, "category": "Travel" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "Indian Overseas Bank",
+          "accountType": "Savings",
+          "accountNumber": "111000999888",
+          "mpin": "8899"
+        },
+        "balance": {
+          "available": 234500.75,
+          "ledger": 235000.75,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 09:20"
+        },
+        "transactions": [
+          { "id": "TXN605", "date": "2026-01-27", "title": "Fixed Deposit Interest", "type": "Credit", "amount": 1250, "category": "Income" },
+          { "id": "TXN606", "date": "2026-01-26", "title": "Medical Insurance", "type": "Debit", "amount": 3200, "category": "Insurance" },
+          { "id": "TXN607", "date": "2026-01-25", "title": "Restaurant Bill", "type": "Debit", "amount": 1800, "category": "Food" },
+          { "id": "TXN608", "date": "2026-01-24", "title": "ATM Withdrawal", "type": "Debit", "amount": 15000, "category": "Cash" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Sonia Reddy",
+      "customerId": "CUST852369",
+      "crn": "CRN8523697410",
+      "mobile": "+91-7766554433",
+      "email": "sonia.reddy@example.com",
+      "password": "Sonia$Secure26",
+      "upi": "soniareddy@okaxis",
+      "mpin": "9347"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "Karnataka Bank",
+          "accountType": "Savings",
+          "accountNumber": "555666777888",
+          "mpin": "3344"
+        },
+        "balance": {
+          "available": 156789.50,
+          "ledger": 157000.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:15"
+        },
+        "transactions": [
+          { "id": "TXN701", "date": "2026-01-26", "title": "Consulting Fee", "type": "Credit", "amount": 35000, "category": "Income" },
+          { "id": "TXN702", "date": "2026-01-25", "title": "Mutual Fund SIP", "type": "Debit", "amount": 5000, "category": "Investment" },
+          { "id": "TXN703", "date": "2026-01-24", "title": "Food Order", "type": "Debit", "amount": 850, "category": "Food" },
+          { "id": "TXN704", "date": "2026-01-23", "title": "Interest Credit", "type": "Credit", "amount": 89, "category": "Income" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "Federal Bank",
+          "accountType": "Current",
+          "accountNumber": "222111000999",
+          "mpin": "5566"
+        },
+        "balance": {
+          "available": 78000.25,
+          "ledger": 78500.25,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:40"
+        },
+        "transactions": [
+          { "id": "TXN705", "date": "2026-01-27", "title": "Project Payment", "type": "Credit", "amount": 25000, "category": "Business" },
+          { "id": "TXN706", "date": "2026-01-26", "title": "Laptop Purchase", "type": "Debit", "amount": 45000, "category": "Shopping" },
+          { "id": "TXN707", "date": "2026-01-25", "title": "Taxi", "type": "Debit", "amount": 450, "category": "Transport" },
+          { "id": "TXN708", "date": "2026-01-24", "title": "Bank Charges", "type": "Debit", "amount": 50, "category": "Fees" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "ram SiVikngh",
+      "customerId": "CUST741852",
+      "crn": "CRN7418529630",
+      "mobile": "+91-6655443322",
+      "email": "vikram.singh@example.com",
+      "password": "Vikram@Bank26",
+      "upi": "vikram.g@okicici",
+      "mpin": "2856"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "Gramin Bank Lucknow",
+          "accountType": "Savings",
+          "accountNumber": "666777888999",
+          "mpin": "1122"
+        },
+        "balance": {
+          "available": 65432.90,
+          "ledger": 66000.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 09:55"
+        },
+        "transactions": [
+          { "id": "TXN801", "date": "2026-01-26", "title": "Pension Credit", "type": "Credit", "amount": 42000, "category": "Income" },
+          { "id": "TXN802", "date": "2026-01-25", "title": "College Fee", "type": "Debit", "amount": 25000, "category": "Education" },
+          { "id": "TXN803", "date": "2026-01-24", "title": "Medical Bill", "type": "Debit", "amount": 5600, "category": "Healthcare" },
+          { "id": "TXN804", "date": "2026-01-23", "title": "Grocery", "type": "Debit", "amount": 2200, "category": "Shopping" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "SBI Bank",
+          "accountType": "Current",
+          "accountNumber": "333222111000",
+          "mpin": "3344"
+        },
+        "balance": {
+          "available": 45000.50,
+          "ledger": 45500.50,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:10"
+        },
+        "transactions": [
+          { "id": "TXN805", "date": "2026-01-27", "title": "Freelance Work", "type": "Credit", "amount": 15000, "category": "Income" },
+          { "id": "TXN806", "date": "2026-01-26", "title": "Utility Bill", "type": "Debit", "amount": 1450, "category": "Utilities" },
+          { "id": "TXN807", "date": "2026-01-25", "title": "Bus Pass", "type": "Debit", "amount": 1200, "category": "Transport" },
+          { "id": "TXN808", "date": "2026-01-24", "title": "Interest", "type": "Credit", "amount": 45, "category": "Income" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Anjali Verma",
+      "customerId": "CUST963258",
+      "crn": "CRN9632587410",
+      "mobile": "+91-8899776655",
+      "email": "anjali.verma@example.com",
+      "password": "Anjali#Verma26",
+      "upi": "anjali.g@okicici",
+      "mpin": "7463"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "Kotak Mahindra Bank",
+          "accountType": "Savings",
+          "accountNumber": "777888999000",
+          "mpin": "5566"
+        },
+        "balance": {
+          "available": 178945.60,
+          "ledger": 179500.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:25"
+        },
+        "transactions": [
+          { "id": "TXN901", "date": "2026-01-26", "title": "Rent Received", "type": "Credit", "amount": 20000, "category": "Income" },
+          { "id": "TXN902", "date": "2026-01-25", "title": "Gold Loan EMI", "type": "Debit", "amount": 12500, "category": "Loan" },
+          { "id": "TXN903", "date": "2026-01-24", "title": "Shopping", "type": "Debit", "amount": 3450, "category": "Shopping" },
+          { "id": "TXN904", "date": "2026-01-23", "title": "Interest Credit", "type": "Credit", "amount": 98, "category": "Income" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "RBL Bank",
+          "accountType": "Current",
+          "accountNumber": "444333222111",
+          "mpin": "7788"
+        },
+        "balance": {
+          "available": 125000.75,
+          "ledger": 125500.75,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:35"
+        },
+        "transactions": [
+          { "id": "TXN905", "date": "2026-01-27", "title": "Property Sale", "type": "Credit", "amount": 75000, "category": "Income" },
+          { "id": "TXN906", "date": "2026-01-26", "title": "Home Renovation", "type": "Debit", "amount": 35000, "category": "Home" },
+          { "id": "TXN907", "date": "2026-01-25", "title": "Car Service", "type": "Debit", "amount": 4200, "category": "Vehicle" },
+          { "id": "TXN908", "date": "2026-01-24", "title": "Bank Fee", "type": "Debit", "amount": 75, "category": "Fees" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Rohit Malhotra",
+      "customerId": "CUST159753",
+      "crn": "CRN1597534862",
+      "mobile": "+91-7788996655",
+      "email": "rohit.malhotra@example.com",
+      "password": "Rohit@Secure2026",
+      "upi": "rohit.malhotra@paytm",
+      "mpin": "5198"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "Yes Bank",
+          "accountType": "Current",
+          "accountNumber": "888999000111",
+          "mpin": "2233"
+        },
+        "balance": {
+          "available": 345678.90,
+          "ledger": 346200.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:05"
+        },
+        "transactions": [
+          { "id": "TXN1001", "date": "2026-01-26", "title": "Client Advance", "type": "Credit", "amount": 150000, "category": "Business" },
+          { "id": "TXN1002", "date": "2026-01-25", "title": "Supplier Payment", "type": "Debit", "amount": 75000, "category": "Business" },
+          { "id": "TXN1003", "date": "2026-01-24", "title": "Office Rent", "type": "Debit", "amount": 45000, "category": "Business" },
+          { "id": "TXN1004", "date": "2026-01-23", "title": "Interest", "type": "Credit", "amount": 210, "category": "Income" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "IndusInd Bank",
+          "accountType": "Savings",
+          "accountNumber": "555444333222",
+          "mpin": "4455"
+        },
+        "balance": {
+          "available": 189000.40,
+          "ledger": 189500.40,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 11:25"
+        },
+        "transactions": [
+          { "id": "TXN1005", "date": "2026-01-27", "title": "Salary Credit", "type": "Credit", "amount": 95000, "category": "Salary" },
+          { "id": "TXN1006", "date": "2026-01-26", "title": "Car EMI", "type": "Debit", "amount": 18500, "category": "Loan" },
+          { "id": "TXN1007", "date": "2026-01-25", "title": "Gym Membership", "type": "Debit", "amount": 1500, "category": "Fitness" },
+          { "id": "TXN1008", "date": "2026-01-24", "title": "Cash Withdrawal", "type": "Debit", "amount": 20000, "category": "Cash" }
+        ]
+      }
+    ]
+  },
+  {
+    "user": {
+      "name": "Meera Nair",
+      "customerId": "CUST357159",
+      "crn": "CRN3571594862",
+      "mobile": "+91-9988771122",
+      "email": "meera.nair@example.com",
+      "password": "Meera@Nair26$",
+      "upi": "meeranair89@okhdfcbank",
+      "mpin": "3829"
+    },
+    "accounts": [
+      {
+        "accountDetails": {
+          "bankName": "South Indian Bank",
+          "accountType": "Savings",
+          "accountNumber": "999000111222",
+          "mpin": "6677"
+        },
+        "balance": {
+          "available": 215678.40,
+          "ledger": 216000.00,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 09:35"
+        },
+        "transactions": [
+          { "id": "TXN1101", "date": "2026-01-26", "title": "Teaching Salary", "type": "Credit", "amount": 55000, "category": "Salary" },
+          { "id": "TXN1102", "date": "2026-01-25", "title": "Insurance Premium", "type": "Debit", "amount": 18500, "category": "Insurance" },
+          { "id": "TXN1103", "date": "2026-01-24", "title": "Book Purchase", "type": "Debit", "amount": 2450, "category": "Education" },
+          { "id": "TXN1104", "date": "2026-01-23", "title": "Interest Credit", "type": "Credit", "amount": 134, "category": "Income" }
+        ]
+      },
+      {
+        "accountDetails": {
+          "bankName": "Karur Vysya Bank",
+          "accountType": "Current",
+          "accountNumber": "222333444555",
+          "mpin": "8899"
+        },
+        "balance": {
+          "available": 125450.80,
+          "ledger": 126000.80,
+          "currency": "INR",
+          "lastUpdated": "2026-01-27 10:55"
+        },
+        "transactions": [
+          { "id": "TXN1105", "date": "2026-01-27", "title": "Tuition Fees", "type": "Credit", "amount": 32000, "category": "Income" },
+          { "id": "TXN1106", "date": "2026-01-26", "title": "School Fee Payment", "type": "Debit", "amount": 15000, "category": "Education" },
+          { "id": "TXN1107", "date": "2026-01-25", "title": "Online Course", "type": "Debit", "amount": 2999, "category": "Education" },
+          { "id": "TXN1108", "date": "2026-01-24", "title": "Bank Charges", "type": "Debit", "amount": 60, "category": "Fees" }
+        ]
+      }
+    ]
+  }
+]

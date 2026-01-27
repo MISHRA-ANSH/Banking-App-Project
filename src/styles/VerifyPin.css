@@ -1,0 +1,61 @@
+/* Pin Page Styles extending Auth Styles */
+
+.pin-box {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.pin-box input {
+  width: 64px;
+  height: 64px;
+  text-align: center;
+  font-size: 28px !important;
+  /* Safer size */
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif !important;
+
+  /* Standard coloring */
+  color: #ffffff !important;
+
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  /* Layout fixes */
+  padding: 0;
+  line-height: 60px;
+  /* Vertically center text */
+  display: block;
+}
+
+.pin-box input:focus {
+  border-color: #10b981 !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Hide number spinners */
+.pin-box input::-webkit-inner-spin-button,
+.pin-box input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Responsive Pin inputs */
+@media (max-width: 480px) {
+  .pin-box {
+    gap: 10px;
+  }
+
+  .pin-box input {
+    width: 50px;
+    height: 50px;
+    font-size: 32px !important;
+    border-radius: 12px;
+  }
+}
