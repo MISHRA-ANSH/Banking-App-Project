@@ -142,13 +142,11 @@ function Navbar({ onChangePage, onLogout, activePage = "home" }) {
             onClick={() => setShowMobileMenu(false)}
           ></div>
         )}
-      </div>
-    </nav >
+      </nav>
 
-      {/* Mobile Bottom Navigation */ }
-      < nav className = "bottom-navbar" >
-      {
-        navItems.map((item) => (
+      {/* Mobile Bottom Navigation */}
+      <nav className="bottom-navbar">
+        {navItems.map((item) => (
           <button
             key={item.id}
             className={`bottom-nav-item ${activePage === item.id ? "active" : ""}`}
@@ -157,9 +155,8 @@ function Navbar({ onChangePage, onLogout, activePage = "home" }) {
             <span className="bottom-nav-icon">{item.icon}</span>
             <span className="bottom-nav-label">{item.label}</span>
           </button>
-        ))
-      }
-    </nav >
+        ))}
+      </nav>
     </>
   );
 }
