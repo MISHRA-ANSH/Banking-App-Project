@@ -1,15 +1,20 @@
 import "../styles/auth.css";
-import { FiUser, FiLock, FiCreditCard, FiHash, FiDollarSign } from "react-icons/fi";
+import { FiUser, FiLock, FiCreditCard, FiHash, FiDollarSign, FiSmartphone, FiMail, FiBriefcase, FiKey } from "react-icons/fi";
 import { useState } from "react";
 
 function SignUp({ onLogin }) {
     const [formData, setFormData] = useState({
         name: "",
+        mobile: "",
+        email: "",
         crn: "",
         password: "",
         confirmPassword: "",
-        mpin: "",
-        initialBalance: ""
+        mpin: "", // App PIN
+        bankName: "Epic Bank",
+        accountType: "Savings",
+        initialBalance: "",
+        transactionPin: "" // Account PIN
     });
     const [step, setStep] = useState(1);
     const [error, setError] = useState("");
@@ -25,21 +30,36 @@ function SignUp({ onLogin }) {
         setError("");
 
         if (step === 1) {
-            if (!formData.name || !formData.crn || !formData.password || !formData.confirmPassword) {
-                setError("Please fill in all fields");
+            if (!formData.name || !formData.mobile || !formData.email || !formData.crn) {
+                setError("Please fill in all personal details");
+                return;
+            }
+            // Basic email validation
+            if (!/\S+@\S+\.\S+/.test(formData.email)) {
+                setError("Please enter a valid email");
+                return;
+            }
+            setStep(2);
+        } else if (step === 2) {
+            if (!formData.password || !formData.confirmPassword || !formData.mpin) {
+                setError("Please fill in all security fields");
                 return;
             }
             if (formData.password !== formData.confirmPassword) {
                 setError("Passwords do not match");
                 return;
             }
-            setStep(2);
+            if (formData.mpin.length !== 4 || isNaN(formData.mpin)) {
+                setError("App MPIN must be a 4-digit number");
+                return;
+            }
+            setStep(3);
         }
     };
 
     const handleBack = () => {
         setError("");
-        setStep(1);
+        setStep(prev => prev - 1);
     };
 
     const handleSubmit = async (e) => {
@@ -47,14 +67,15 @@ function SignUp({ onLogin }) {
         setLoading(true);
         setError("");
 
-        if (!formData.mpin) {
-            setError("Please set your MPIN");
+        // Final Validation (Step 3)
+        if (!formData.transactionPin) {
+            setError("Please set your Transaction MPIN");
             setLoading(false);
             return;
         }
 
-        if (formData.mpin.length !== 4 || isNaN(formData.mpin)) {
-            setError("MPIN must be a 4-digit number");
+        if (formData.transactionPin.length !== 4 || isNaN(formData.transactionPin)) {
+            setError("Transaction PIN must be a 4-digit number");
             setLoading(false);
             return;
         }
@@ -67,36 +88,39 @@ function SignUp({ onLogin }) {
             if (exists) {
                 setError("User with this CRN already exists");
                 setLoading(false);
-                setStep(1); 
+                setStep(1);
                 return;
             }
 
-            // Create new user object
+            // Create new user object matching the requested JSON structure
             const newUser = {
                 user: {
                     name: formData.name,
+                    customerId: `CUST${Math.floor(100000 + Math.random() * 900000)}`, // Generate Customer ID
                     crn: formData.crn,
+                    mobile: formData.mobile,
+                    email: formData.email,
                     password: formData.password,
-                    pin: formData.mpin,
-                    email: `${formData.crn}@example.com`, // Placeholder
-                    mobile: "1234567890" // Placeholder
+                    upi: `${formData.name.toLowerCase().replace(/\s/g, '')}@okepic`, // Generate UPI ID
+                    mpin: formData.mpin // This is the App Login PIN
                 },
                 accounts: [
                     {
-                        id: `ACC${Date.now()}`,
-                        accountNumber: Math.floor(1000000000 + Math.random() * 9000000000).toString(),
-                        accountType: "Savings",
-                        bankName: "Epic Bank",
-                        balance: {
-                            currency: "INR",
-                            available: parseFloat(formData.initialBalance) || 0
+                        accountDetails: {
+                            bankName: formData.bankName,
+                            accountType: formData.accountType,
+                            accountNumber: Math.floor(100000000000 + Math.random() * 900000000000).toString(), // 12 digits
+                            mpin: formData.transactionPin // Account specific Transaction PIN
                         },
-                        mpin: formData.mpin,
-                        transactions: [],
-                        status: "active"
+                        balance: {
+                            available: parseFloat(formData.initialBalance) || 0,
+                            ledger: parseFloat(formData.initialBalance) || 0,
+                            currency: "INR",
+                            lastUpdated: new Date().toISOString().replace('T', ' ').substring(0, 16)
+                        },
+                        transactions: []
                     }
-                ],
-                transactions: []
+                ]
             };
 
             // Save to localStorage
@@ -112,6 +136,15 @@ function SignUp({ onLogin }) {
             setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const getStepTitle = () => {
+        switch (step) {
+            case 1: return "Step 1: Personal Details";
+            case 2: return "Step 2: App Security";
+            case 3: return "Step 3: Account Setup";
+            default: return "";
         }
     };
 
@@ -138,10 +171,10 @@ function SignUp({ onLogin }) {
                 <div className="auth-right">
                     <div className="login-header">
                         <h3>Create Account</h3>
-                        <p>{step === 1 ? "Step 1: Personal Details" : "Step 2: Account Security"}</p>
+                        <p>{getStepTitle()}</p>
                     </div>
 
-                    <form onSubmit={step === 1 ? handleNext : handleSubmit}>
+                    <form onSubmit={step === 3 ? handleSubmit : handleNext}>
                         {step === 1 && (
                             <>
                                 <div className="form-group">
@@ -160,6 +193,34 @@ function SignUp({ onLogin }) {
                                 </div>
 
                                 <div className="form-group">
+                                    <label>Mobile Number</label>
+                                    <div className="input-group">
+                                        <FiSmartphone className="input-icon" />
+                                        <input
+                                            type="text"
+                                            name="mobile"
+                                            placeholder="+91-9876543210"
+                                            value={formData.mobile}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Email Address</label>
+                                    <div className="input-group">
+                                        <FiMail className="input-icon" />
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            placeholder="john@example.com"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
                                     <label>Choose a CRN (User ID)</label>
                                     <div className="input-group">
                                         <FiHash className="input-icon" />
@@ -172,7 +233,11 @@ function SignUp({ onLogin }) {
                                         />
                                     </div>
                                 </div>
+                            </>
+                        )}
 
+                        {step === 2 && (
+                            <>
                                 <div className="form-group">
                                     <label>Password</label>
                                     <div className="input-group">
@@ -183,6 +248,7 @@ function SignUp({ onLogin }) {
                                             placeholder="Create a password"
                                             value={formData.password}
                                             onChange={handleChange}
+                                            autoFocus
                                         />
                                     </div>
                                 </div>
@@ -200,13 +266,9 @@ function SignUp({ onLogin }) {
                                         />
                                     </div>
                                 </div>
-                            </>
-                        )}
 
-                        {step === 2 && (
-                            <>
                                 <div className="form-group">
-                                    <label>Set 4-Digit MPIN</label>
+                                    <label>Set 4-Digit App MPIN</label>
                                     <div className="input-group">
                                         <FiCreditCard className="input-icon" />
                                         <input
@@ -216,7 +278,66 @@ function SignUp({ onLogin }) {
                                             maxLength="4"
                                             value={formData.mpin}
                                             onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {step === 3 && (
+                            <>
+                                <div className="form-group">
+                                    <label>Bank Name</label>
+                                    <div className="input-group">
+                                        <FiBriefcase className="input-icon" />
+                                        <input
+                                            type="text"
+                                            name="bankName"
+                                            placeholder="e.g. Epic Bank"
+                                            value={formData.bankName}
+                                            onChange={handleChange}
                                             autoFocus
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Account Type</label>
+                                    <div className="input-group">
+                                        <FiBriefcase className="input-icon" />
+                                        <select
+                                            name="accountType"
+                                            value={formData.accountType}
+                                            onChange={handleChange}
+                                            style={{
+                                                width: '100%',
+                                                padding: '14px 16px 14px 60px',
+                                                borderRadius: '12px',
+                                                border: '2px solid #e2e8f0',
+                                                background: '#ffffff',
+                                                color: '#1e293b',
+                                                fontSize: '15px',
+                                                fontWeight: '500',
+                                                appearance: 'none'
+                                            }}
+                                        >
+                                            <option value="Savings">Savings</option>
+                                            <option value="Current">Current</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Set 4-Digit Transaction PIN</label>
+                                    <div className="input-group">
+                                        <FiKey className="input-icon" />
+                                        <input
+                                            type="text"
+                                            name="transactionPin"
+                                            placeholder="0000"
+                                            maxLength="4"
+                                            value={formData.transactionPin}
+                                            onChange={handleChange}
                                         />
                                     </div>
                                 </div>
@@ -240,7 +361,7 @@ function SignUp({ onLogin }) {
                         {error && <div className="error-message">{error}</div>}
 
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            {step === 2 && (
+                            {step > 1 && (
                                 <button
                                     type="button"
                                     onClick={handleBack}
@@ -251,7 +372,7 @@ function SignUp({ onLogin }) {
                                 </button>
                             )}
                             <button type="submit" disabled={loading} className="auth-btn">
-                                {loading ? "Creating..." : (step === 1 ? "Next" : "Sign Up")}
+                                {loading ? "Creating..." : (step === 3 ? "Sign Up" : "Next")}
                             </button>
                         </div>
 

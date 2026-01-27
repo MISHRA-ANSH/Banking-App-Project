@@ -1326,12 +1326,17 @@
 
 @media (max-width: 480px) {
   .accounts-cards-container {
-    padding: 10px;
+    padding: 0;
+  }
+
+  .main-content-wrapper {
+    padding: 16px;
   }
 
   .stats-overview {
     grid-template-columns: 1fr;
-    padding: 20px;
+    padding: 0;
+    gap: 16px;
   }
 
   .account-actions {
@@ -1348,5 +1353,13 @@
 
   .transaction-stats {
     grid-template-columns: 1fr;
+  }
+
+  .card-item {
+    padding: 20px;
+  }
+
+  .card-number {
+    font-size: 18px;
   }
 }

@@ -1,4 +1,3 @@
-
 .settings-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f6fc 0%, #f5f3f8 100%);
@@ -66,7 +65,7 @@
   width: 280px;
   background: #f8f9fa;
   border-right: 1px solid #e9ecef;
-  display: flex ;
+  display: flex;
   flex-direction: column;
 }
 
@@ -485,15 +484,15 @@
   border-radius: 50%;
 }
 
-.settings-toggle-switch input:checked + .settings-slider {
+.settings-toggle-switch input:checked+.settings-slider {
   background-color: #06d6a0;
 }
 
-.settings-toggle-switch input:focus + .settings-slider {
+.settings-toggle-switch input:focus+.settings-slider {
   box-shadow: 0 0 1px #06d6a0;
 }
 
-.settings-toggle-switch input:checked + .settings-slider:before {
+.settings-toggle-switch input:checked+.settings-slider:before {
   transform: translateX(26px);
 }
 
@@ -997,24 +996,24 @@
   .settings-layout {
     flex-direction: column;
   }
-  
+
   .settings-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e9ecef;
   }
-  
+
   .settings-nav {
     display: flex;
     overflow-x: auto;
     padding: 0;
   }
-  
+
   .settings-nav-item {
     min-width: 150px;
     justify-content: center;
   }
-  
+
   .settings-info-grid {
     grid-template-columns: 1fr;
   }
@@ -1027,11 +1026,11 @@
     text-align: center;
     padding: 20px;
   }
-  
+
   .settings-main-content {
     padding: 20px;
   }
-  
+
   .settings-security-grid,
   .settings-notification-grid,
   .settings-preference-grid,
@@ -1039,7 +1038,7 @@
   .settings-plans-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .settings-session-item,
   .settings-invoice-item {
     flex-direction: column;
@@ -1053,12 +1052,25 @@
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .settings-edit-actions {
     justify-content: center;
   }
-  
+
   .settings-theme-options {
     flex-direction: column;
+  }
+
+  .settings-header h1 {
+    font-size: 24px;
+  }
+
+  .settings-section-header h3 {
+    font-size: 20px;
+  }
+
+  .settings-notification-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

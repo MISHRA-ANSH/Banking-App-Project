@@ -265,6 +265,12 @@
   animation: fadeInUp 0.6s ease 0.2s both;
 }
 
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .dashboard-left,
 .dashboard-right {
   display: flex;
@@ -277,6 +283,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .charts-section {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chart-card {
