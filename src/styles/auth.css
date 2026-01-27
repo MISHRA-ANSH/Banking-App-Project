@@ -299,9 +299,9 @@ body {
     height: auto;
     max-height: none;
     /* Allow full height */
-    width: 90%;
+    width: 95%;
     max-width: 450px;
-    margin: 20px auto;
+    margin: 10px auto;
     overflow: visible;
     /* Prevent cutting off content */
   }
@@ -332,7 +332,8 @@ body {
   }
 
   .auth-right {
-    padding: 30px 20px;
+    padding: 24px 20px;
+    /* Reduced padding */
   }
 
   .auth-brand h1 {
