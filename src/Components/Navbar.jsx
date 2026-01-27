@@ -142,22 +142,26 @@ function Navbar({ onChangePage, onLogout, activePage = "home" }) {
             onClick={() => setShowMobileMenu(false)}
           ></div>
         )}
+      </div>
+    </nav >
 
-        {/* Mobile Bottom Navigation */}
-        <nav className="bottom-navbar">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              className={`bottom-nav-item ${activePage === item.id ? "active" : ""}`}
-              onClick={() => handleNavClick(item.id)}
-            >
-              <span className="bottom-nav-icon">{item.icon}</span>
-              <span className="bottom-nav-label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </>
-      );
+      {/* Mobile Bottom Navigation */ }
+      < nav className = "bottom-navbar" >
+      {
+        navItems.map((item) => (
+          <button
+            key={item.id}
+            className={`bottom-nav-item ${activePage === item.id ? "active" : ""}`}
+            onClick={() => handleNavClick(item.id)}
+          >
+            <span className="bottom-nav-icon">{item.icon}</span>
+            <span className="bottom-nav-label">{item.label}</span>
+          </button>
+        ))
+      }
+    </nav >
+    </>
+  );
 }
 
-      export default Navbar;
+export default Navbar;
