@@ -297,9 +297,13 @@ body {
   .auth-content {
     flex-direction: column;
     height: auto;
+    max-height: none;
+    /* Allow full height */
     width: 90%;
     max-width: 450px;
     margin: 20px auto;
+    overflow: visible;
+    /* Prevent cutting off content */
   }
 
   .auth-left {
