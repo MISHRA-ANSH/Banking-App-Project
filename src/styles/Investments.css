@@ -796,13 +796,83 @@
     .sidebar-nav-item {
         width: auto;
         white-space: nowrap;
+        padding: 10px 16px;
+        flex-shrink: 0;
     }
 
     .sidebar-quick-actions {
         display: none;
-        /* Hide quick actions in sidebar for mobile */
     }
 }
+
+@media (max-width: 768px) {
+    .investment-values {
+        padding: 12px;
+    }
+
+    .value-amount.current {
+        font-size: 15px;
+    }
+
+    .investment-card {
+        padding: 16px;
+    }
+
+    .overview-card {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .overview-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .overview-value {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .investments-container {
+        padding-bottom: 80px;
+    }
+
+    .investments-main-content {
+        padding: 16px;
+    }
+
+    .content-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .back-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .allocation-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .allocation-info {
+        width: 100%;
+    }
+
+    .allocation-bar {
+        width: 100%;
+    }
+}
+
+.sidebar-quick-actions {
+    display: none;
+    /* Hide quick actions in sidebar for mobile */
+}
+
 
 @media (max-width: 768px) {
     .overview-card {

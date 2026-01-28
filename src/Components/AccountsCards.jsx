@@ -34,15 +34,48 @@ import {
   FiHeart,
   FiBook,
   FiMusic,
-  FiVideo
+  FiVideo,
+  FiX
 } from 'react-icons/fi';
+
+// Toast Component
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className={`toast ${type}`}>
+      <div className="toast-icon">
+        {type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
+      </div>
+      <div className="toast-message">{message}</div>
+      <button className="toast-close" onClick={onClose}>
+        <FiX />
+      </button>
+    </div>
+  );
+};
 
 const AccountsCards = ({ onBack, darkMode }) => {
   /* Updated to use Context Data */
-  const { state, createAccount, deleteAccount, getTotalBalance, deposit, withdraw } = useBanking();
+  const { state, createAccount, deleteAccount, getTotalBalance, deposit, withdraw, updateAccountMpin, toggleAccountStatus } = useBanking();
   const [activeTab, setActiveTab] = useState('accounts');
   const [showCardNumber, setShowCardNumber] = useState({});
   const [cards, setCards] = useState([]);
+
+  // Toast State
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   // Transaction Modal State
   const [showTransModal, setShowTransModal] = useState(false);
@@ -93,19 +126,59 @@ const AccountsCards = ({ onBack, darkMode }) => {
     }
   }, []);
 
+  // Add Account Modal State
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const [newAccountData, setNewAccountData] = useState({
+    bankName: 'Epic Bank',
+    accountType: 'Savings',
+    initialBalance: '',
+    mpin: ''
+  });
+
+  // Manage Account Modal State
+  const [showManageModal, setShowManageModal] = useState(false);
+  const [selectedAccountForManagement, setSelectedAccountForManagement] = useState(null);
+  const [manageMode, setManageMode] = useState('menu'); // 'menu', 'change-mpin', 'forgot-mpin', 'delete-confirm'
+  const [mpinInputs, setMpinInputs] = useState({ oldMpin: '', newMpin: '', confirmMpin: '', loginPin: '' });
+  const [manageError, setManageError] = useState('');
+  const [manageSuccess, setManageSuccess] = useState('');
+  const [showAccountSelectionModal, setShowAccountSelectionModal] = useState(false);
+
   const handleAddAccount = () => {
+    setShowAddAccountModal(true);
+  };
+
+  const handleAddAccountSubmit = () => {
+    // Basic Validation
+    if (!newAccountData.bankName || !newAccountData.mpin) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    if (newAccountData.mpin.length !== 4 || isNaN(newAccountData.mpin)) {
+      alert("MPIN must be a 4-digit number");
+      return;
+    }
+
     const accountData = {
-      accountNumber: `ACC${Date.now().toString().slice(-8)}`,
-      accountType: 'Savings',
-      bankName: 'Global Bank',
-      initialBalance: 0
+      accountNumber: Math.floor(100000000000 + Math.random() * 900000000000).toString(),
+      accountType: newAccountData.accountType,
+      bankName: newAccountData.bankName,
+      initialBalance: newAccountData.initialBalance || 0,
+      mpin: newAccountData.mpin
     };
 
     const result = createAccount(accountData);
 
     if (result.success) {
-      // Refresh accounts from context handled by useEffect/Context
-      alert('Account created successfully!');
+      setShowAddAccountModal(false);
+      setNewAccountData({
+        bankName: 'Epic Bank',
+        accountType: 'Savings',
+        initialBalance: '',
+        mpin: ''
+      });
+      alert(`Account Added Successfully!\nAccount Number: ${accountData.accountNumber}`);
     } else {
       alert(`Failed to create account: ${result.error}`);
     }
@@ -164,6 +237,112 @@ const AccountsCards = ({ onBack, darkMode }) => {
   };
 
 
+  const handleManageClick = (account) => {
+    setSelectedAccountForManagement(account);
+    setManageMode('menu');
+    setMpinInputs({ oldMpin: '', newMpin: '', confirmMpin: '', loginPin: '' });
+    setManageError('');
+    setManageSuccess('');
+    setShowManageModal(true);
+  };
+
+  const handleChangeMpin = () => {
+    setManageError('');
+    setManageSuccess('');
+
+    if (mpinInputs.newMpin.length !== 4 || isNaN(mpinInputs.newMpin)) {
+      setManageError('New MPIN must be 4 digits');
+      return;
+    }
+    if (mpinInputs.newMpin !== mpinInputs.confirmMpin) {
+      setManageError('New MPINs do not match');
+      return;
+    }
+
+    // Verify Old MPIN (In a real app, backend would do this, here we check locally or trust context)
+    // Since context updateAccountMpin doesn't force old MPIN check, we can check it here against local state if we want, 
+    // but for "Change MPIN" flow it's best practice. Context verifyAccountMpin is available.
+    // But verifyAccountMpin is in context, let's assume we can use it or just rely on the inputs.
+    // Wait, I didn't export verifyAccountMpin in the hook destructuring in step 1.
+    // Let's assume the user knows the old MPIN if they are in this flow, or rely on 'Forgot MPIN'
+
+    // For now, let's just proceed with update, but assuming we want to optionally check old MPIN if we had access.
+    // Ideally updateAccountMpin should take oldMpin, but I implemented it to just take newMpin (admin/override style).
+    // So let's just check equality with current account mpin from state if possible.
+    if (String(selectedAccountForManagement.mpin) !== String(mpinInputs.oldMpin)) {
+      setManageError('Incorrect Old MPIN');
+      return;
+    }
+
+    const result = updateAccountMpin(selectedAccountForManagement.id, mpinInputs.newMpin);
+    if (result.success) {
+      setManageSuccess('MPIN Changed Successfully');
+      setTimeout(() => setShowManageModal(false), 1500);
+    } else {
+      setManageError(result.error);
+    }
+  };
+
+  const handleForgotMpin = () => {
+    setManageError('');
+    setManageSuccess('');
+
+    // Verify Login PIN (Profile PIN)
+    // state.user.pin is the profile PIN
+    if (String(state.user?.pin) !== String(mpinInputs.loginPin)) {
+      setManageError('Incorrect Login PIN');
+      return;
+    }
+
+    if (mpinInputs.newMpin.length !== 4 || isNaN(mpinInputs.newMpin)) {
+      setManageError('New MPIN must be 4 digits');
+      return;
+    }
+    if (mpinInputs.newMpin !== mpinInputs.confirmMpin) {
+      setManageError('New MPINs do not match');
+      return;
+    }
+
+    const result = updateAccountMpin(selectedAccountForManagement.id, mpinInputs.newMpin);
+    if (result.success) {
+      setManageSuccess('MPIN Reset Successfully');
+      addToast('MPIN Reset Successfully', 'success');
+      setTimeout(() => setShowManageModal(false), 1500);
+    } else {
+      setManageError(result.error);
+      addToast(result.error, 'error');
+    }
+  };
+
+  const handleDeleteAccountConfirm = () => {
+    if (selectedAccountForManagement.balance > 0) {
+      setManageError('Cannot delete account with available balance. Please withdraw funds first.');
+      return;
+    }
+
+    const result = deleteAccount(selectedAccountForManagement.id);
+    if (result.success) {
+      setShowManageModal(false);
+      addToast('Account deleted successfully', 'success');
+    } else {
+      setManageError(result.error);
+      addToast(result.error, 'error');
+    }
+  };
+
+  const handleToggleStatus = () => {
+    const result = toggleAccountStatus(selectedAccountForManagement.id);
+    if (result.success) {
+      setManageSuccess(result.message);
+      addToast(result.message, 'success');
+      setSelectedAccountForManagement(prev => ({ ...prev, status: prev.status === 'active' ? 'deactivated' : 'active' }));
+    } else {
+      setManageError(result.error);
+      addToast(result.error, 'error');
+    }
+  };
+
+
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
@@ -207,6 +386,180 @@ const AccountsCards = ({ onBack, darkMode }) => {
     { id: 'analytics', label: 'Analytics', icon: <FiTrendingUp /> }
   ];
 
+  const renderManageAccountModal = () => {
+    if (!showManageModal || !selectedAccountForManagement) return null;
+
+    const modalStyle = {
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100
+    };
+
+    const contentStyle = {
+      background: darkMode ? '#1e293b' : 'white', padding: '2rem', borderRadius: '1rem', width: '400px',
+      color: darkMode ? '#f8fafc' : 'inherit', maxHeight: '90vh', overflowY: 'auto'
+    };
+
+    const inputStyle = {
+      width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+      border: '1px solid #ccc', backgroundColor: darkMode ? '#0f172a' : 'white',
+      color: darkMode ? 'white' : 'black', marginBottom: '1rem'
+    };
+
+    return (
+      <div style={modalStyle}>
+        <div style={contentStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3>Manage Account</h3>
+            <button onClick={() => setShowManageModal(false)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+          </div>
+
+          {manageError && <div style={{ background: '#fee2e2', color: '#ef476f', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>{manageError}</div>}
+          {manageSuccess && <div style={{ background: '#dcfce7', color: '#06d6a0', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>{manageSuccess}</div>}
+
+          <div style={{ marginBottom: '1rem', padding: '1rem', background: darkMode ? '#0f172a' : '#f1f5f9', borderRadius: '0.5rem' }}>
+            <p style={{ margin: 0, fontWeight: 'bold' }}>{selectedAccountForManagement.bankName} - {selectedAccountForManagement.accountType}</p>
+            <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8 }}>{selectedAccountForManagement.accountNumber}</p>
+          </div>
+
+          {manageMode === 'menu' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <button
+                onClick={() => setManageMode('change-mpin')}
+                style={{ padding: '1rem', textAlign: 'left', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}
+              >
+                <FiLock /> Change MPIN
+              </button>
+              <button
+                onClick={() => setManageMode('forgot-mpin')}
+                style={{ padding: '1rem', textAlign: 'left', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}
+              >
+                <FiRefreshCw /> Forgot MPIN
+              </button>
+              <button
+                onClick={handleToggleStatus}
+                style={{ padding: '1rem', textAlign: 'left', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}
+              >
+                {selectedAccountForManagement.status === 'active' ? <FiEyeOff /> : <FiEye />}
+                {selectedAccountForManagement.status === 'active' ? 'Deactivate Account' : 'Activate Account'}
+              </button>
+              <button
+                onClick={() => setManageMode('delete-confirm')}
+                style={{ padding: '1rem', textAlign: 'left', borderRadius: '0.5rem', border: '1px solid #fee2e2', background: '#fee2e2', color: '#ef476f', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}
+              >
+                <FiTrash2 /> Delete Account
+              </button>
+            </div>
+          )}
+
+          {manageMode === 'change-mpin' && (
+            <div>
+              <h4>Change MPIN</h4>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Old MPIN</label>
+              <input type="password" maxLength="4" placeholder="****" style={inputStyle} value={mpinInputs.oldMpin} onChange={e => setMpinInputs({ ...mpinInputs, oldMpin: e.target.value })} />
+
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>New MPIN</label>
+              <input type="password" maxLength="4" placeholder="****" style={inputStyle} value={mpinInputs.newMpin} onChange={e => setMpinInputs({ ...mpinInputs, newMpin: e.target.value })} />
+
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Confirm New MPIN</label>
+              <input type="password" maxLength="4" placeholder="****" style={inputStyle} value={mpinInputs.confirmMpin} onChange={e => setMpinInputs({ ...mpinInputs, confirmMpin: e.target.value })} />
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button onClick={() => setManageMode('menu')} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#e2e8f0', cursor: 'pointer' }}>Back</button>
+                <button onClick={handleChangeMpin} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer' }}>Update MPIN</button>
+              </div>
+            </div>
+          )}
+
+          {manageMode === 'forgot-mpin' && (
+            <div>
+              <h4>Reset MPIN</h4>
+              <p style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>Enter your Login PIN to verification.</p>
+
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Login PIN</label>
+              <input type="password" maxLength="6" placeholder="Login PIN" style={inputStyle} value={mpinInputs.loginPin} onChange={e => setMpinInputs({ ...mpinInputs, loginPin: e.target.value })} />
+
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>New MPIN</label>
+              <input type="password" maxLength="4" placeholder="****" style={inputStyle} value={mpinInputs.newMpin} onChange={e => setMpinInputs({ ...mpinInputs, newMpin: e.target.value })} />
+
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Confirm New MPIN</label>
+              <input type="password" maxLength="4" placeholder="****" style={inputStyle} value={mpinInputs.confirmMpin} onChange={e => setMpinInputs({ ...mpinInputs, confirmMpin: e.target.value })} />
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button onClick={() => setManageMode('menu')} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#e2e8f0', cursor: 'pointer' }}>Back</button>
+                <button onClick={handleForgotMpin} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer' }}>Reset MPIN</button>
+              </div>
+            </div>
+          )}
+
+          {manageMode === 'delete-confirm' && (
+            <div style={{ textAlign: 'center' }}>
+              <FiAlertCircle size={48} color="#ef476f" style={{ marginBottom: '1rem' }} />
+              <h4>Delete Account?</h4>
+              <p>Are you sure you want to delete this account? This action cannot be undone.</p>
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                <button onClick={() => setManageMode('menu')} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#e2e8f0', cursor: 'pointer' }}>Cancel</button>
+                <button onClick={handleDeleteAccountConfirm} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#ef476f', color: 'white', cursor: 'pointer' }}>Delete</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderAccountSelectionModal = () => {
+    if (!showAccountSelectionModal) return null;
+
+    const modalStyle = {
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100
+    };
+
+    const contentStyle = {
+      background: darkMode ? '#1e293b' : 'white', padding: '2rem', borderRadius: '1rem', width: '400px',
+      color: darkMode ? '#f8fafc' : 'inherit', maxHeight: '80vh', overflowY: 'auto'
+    };
+
+    return (
+      <div style={modalStyle}>
+        <div style={contentStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3>Select Account to Manage</h3>
+            <button onClick={() => setShowAccountSelectionModal(false)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {accounts.map(acc => (
+              <div
+                key={acc.id}
+                onClick={() => {
+                  handleManageClick(acc);
+                  setShowAccountSelectionModal(false);
+                }}
+                style={{
+                  padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', cursor: 'pointer',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  background: darkMode ? '#0f172a' : 'white',
+                  opacity: acc.status === 'deactivated' ? 0.7 : 1
+                }}
+              >
+                <div>
+                  <p style={{ margin: 0, fontWeight: 'bold' }}>{acc.bankName}</p>
+                  <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>{acc.accountNumber}</p>
+                </div>
+                <FiSettings />
+              </div>
+            ))}
+            {accounts.length === 0 && <p>No accounts found.</p>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
+
   const renderAccounts = () => (
     <div className="accounts-section">
       <div className="section-header">
@@ -240,7 +593,7 @@ const AccountsCards = ({ onBack, darkMode }) => {
               <div className="detail-row">
                 <span className="detail-label">Available Balance</span>
                 <span className="detail-value balance">
-                  {formatCurrency(account.available)}
+                  {formatCurrency(account.balance)}
                 </span>
               </div>
               {account.interestRate && (
@@ -274,10 +627,20 @@ const AccountsCards = ({ onBack, darkMode }) => {
               >
                 <FiDollarSign /> Withdraw
               </button>
+              <button
+                className="action-btn settings-btn"
+                style={{ background: '#e2e8f0', color: '#1e293b' }}
+                onClick={() => handleManageClick(account)}
+              >
+                <FiSettings /> Manage
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Manage Account Modal */}
+      {renderManageAccountModal()}
 
       {/* Transaction Modal */}
       {showTransModal && (
@@ -355,17 +718,16 @@ const AccountsCards = ({ onBack, darkMode }) => {
           </div>
         </div>
       )}
-
       <div className="quick-actions">
         <h4>Quick Actions</h4>
         <div className="actions-grid">
-          <button className="quick-action">
+          <button className="quick-action" onClick={handleAddAccount}>
             <FiPlus /> Open New Account
           </button>
           <button className="quick-action">
             <FiBarChart2 /> View Statements
           </button>
-          <button className="quick-action">
+          <button className="quick-action" onClick={() => setShowAccountSelectionModal(true)}>
             <FiSettings /> Manage Accounts
           </button>
           <button className="quick-action">
@@ -373,6 +735,108 @@ const AccountsCards = ({ onBack, darkMode }) => {
           </button>
         </div>
       </div>
+
+      {/* Account Selection Modal */}
+      {renderAccountSelectionModal()}
+
+      {showAddAccountModal && (
+        <div className="modal-overlay" style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }}>
+          <div className="modal-content" style={{
+            background: darkMode ? '#1e293b' : 'white', padding: '2rem', borderRadius: '1rem', width: '400px',
+            color: darkMode ? '#f8fafc' : 'inherit'
+          }}>
+            <h3>Add New Account</h3>
+
+            <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Bank Name</label>
+                <input
+                  type="text"
+                  value={newAccountData.bankName}
+                  onChange={(e) => setNewAccountData({ ...newAccountData, bankName: e.target.value })}
+                  placeholder="e.g. HDFC Bank"
+                  className="form-input"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+                    border: '1px solid #ccc', backgroundColor: darkMode ? '#0f172a' : 'white',
+                    color: darkMode ? 'white' : 'black'
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Account Type</label>
+                <select
+                  value={newAccountData.accountType}
+                  onChange={(e) => setNewAccountData({ ...newAccountData, accountType: e.target.value })}
+                  className="form-input"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+                    border: '1px solid #ccc', backgroundColor: darkMode ? '#0f172a' : 'white',
+                    color: darkMode ? 'white' : 'black'
+                  }}
+                >
+                  <option value="Savings">Savings</option>
+                  <option value="Current">Current</option>
+                  <option value="Salary">Salary</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Initial Balance</label>
+                <input
+                  type="number"
+                  value={newAccountData.initialBalance}
+                  onChange={(e) => setNewAccountData({ ...newAccountData, initialBalance: e.target.value })}
+                  placeholder="0.00"
+                  className="form-input"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+                    border: '1px solid #ccc', backgroundColor: darkMode ? '#0f172a' : 'white',
+                    color: darkMode ? 'white' : 'black'
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Set MPIN (4 Digits)</label>
+                <input
+                  type="password"
+                  maxLength="4"
+                  value={newAccountData.mpin}
+                  onChange={(e) => setNewAccountData({ ...newAccountData, mpin: e.target.value })}
+                  placeholder="****"
+                  className="form-input"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '0.5rem',
+                    border: '1px solid #ccc', backgroundColor: darkMode ? '#0f172a' : 'white',
+                    color: darkMode ? 'white' : 'black'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowAddAccountModal(false)}
+                style={{ padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', background: '#94a3b8', color: 'white', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddAccountSubmit}
+                style={{
+                  padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none',
+                  background: '#6366f1',
+                  color: 'white', cursor: 'pointer'
+                }}
+              >
+                Create Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -662,6 +1126,13 @@ const AccountsCards = ({ onBack, darkMode }) => {
 
   return (
     <div className={`accounts-cards-container ${darkMode ? 'dark-mode' : ''}`}>
+      {/* Toast Container */}
+      <div className="toast-container">
+        {toasts.map(toast => (
+          <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
+        ))}
+      </div>
+
       <div className="accounts-cards-layout">
         {/* Static Sidebar */}
         <div className="sidebar-container">

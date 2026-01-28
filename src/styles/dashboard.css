@@ -5,6 +5,8 @@
   min-height: calc(100vh - 60px);
   background: #fafafa;
   padding: 40px;
+  padding-bottom: 90px;
+  /* Space for bottom navbar */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
@@ -268,6 +270,32 @@
 @media (max-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .modern-dashboard {
+    padding: 20px;
+    padding-bottom: 90px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card-value {
+    font-size: 24px;
   }
 }
 
@@ -565,9 +593,10 @@
   font-weight: 600;
   color: #1e293b;
   margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  /* Allow wrapping */
+  overflow: visible;
+  line-height: 1.3;
 }
 
 .dark-mode .transaction-title {

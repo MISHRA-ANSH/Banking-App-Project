@@ -17,8 +17,9 @@ export const ACTIONS = {
     DELETE_ACCOUNT: 'DELETE_ACCOUNT',
     UPDATE_ACCOUNT: 'UPDATE_ACCOUNT',
     SET_ACTIVE_ACCOUNT: 'SET_ACTIVE_ACCOUNT',
-    LOGOUT_ACCOUNT: 'LOGOUT_ACCOUNT',
     UPDATE_ACCOUNT: 'UPDATE_ACCOUNT',
+    UPDATE_ACCOUNT_MPIN: 'UPDATE_ACCOUNT_MPIN',
+    TOGGLE_ACCOUNT_STATUS: 'TOGGLE_ACCOUNT_STATUS',
 
     // Transaction Actions
     DEPOSIT: 'DEPOSIT',
@@ -141,6 +142,15 @@ function accountsReducer(state, action) {
             });
         }
 
+        case ACTIONS.UPDATE_ACCOUNT_MPIN: {
+            const { accountId, newMpin } = action.payload;
+            return state.map(acc =>
+                acc.id === accountId
+                    ? { ...acc, mpin: newMpin, lastUpdated: new Date().toISOString() }
+                    : acc
+            );
+        }
+
         default:
             return state;
     }
@@ -192,6 +202,8 @@ function bankingReducer(state, action) {
 
             case ACTIONS.CREATE_ACCOUNT:
             case ACTIONS.DELETE_ACCOUNT:
+            case ACTIONS.UPDATE_ACCOUNT_MPIN:
+            case ACTIONS.TOGGLE_ACCOUNT_STATUS:
             case ACTIONS.DEPOSIT:
             case ACTIONS.WITHDRAW:
             case ACTIONS.TRANSFER: {
@@ -237,6 +249,24 @@ export function BankingProvider({ children }) {
 
                 if (storedUserJSON) {
                     let userData = JSON.parse(storedUserJSON);
+
+                    // SYNC FIX: Always refresh from "Database" (epic_all_users) to get latest balance/transactions
+                    const allUsersJSON = localStorage.getItem('epic_all_users');
+                    if (allUsersJSON) {
+                        const allUsers = JSON.parse(allUsersJSON);
+                        const freshUserData = allUsers.find(u =>
+                            u.user?.crn === userData.user?.crn
+                        );
+
+                        if (freshUserData) {
+                            console.log("Syncing session with latest database data...");
+                            userData = freshUserData;
+                            // Update session storage to match
+                            localStorage.setItem('epic_logged_user', JSON.stringify(freshUserData));
+                        }
+                    }
+
+                    // MIGRATION 2: Ensure all accounts have MPIN
 
                     // MIGRATION 2: Ensure all accounts have MPIN
                     // Defaulting to user's PIN or '1234'
@@ -371,15 +401,22 @@ export function BankingProvider({ children }) {
             if (allUsersJSON) {
                 const allUsers = JSON.parse(allUsersJSON);
                 const recipientIndex = allUsers.findIndex(u =>
-                    // Check modern 'accounts' array
-                    (u.accounts && u.accounts.some(a => String(a.accountDetails?.accountNumber) === String(toAccountNumber))) ||
+                    // Check modern 'accounts' array (Nested & Normalized)
+                    (u.accounts && u.accounts.some(a =>
+                        String(a.accountDetails?.accountNumber) === String(toAccountNumber) ||
+                        String(a.accountNumber) === String(toAccountNumber)
+                    )) ||
                     // Check legacy 'account' object
                     (u.account && String(u.account.accountNumber) === String(toAccountNumber)) ||
-                    // Check User Details (Mobile/UPI)
+                    // Check User Details (Mobile/UPI) - Case Insensitive & Space-insensitive handles
                     (u.user && (
-                        String(u.user.mobile) === String(toAccountNumber) ||
-                        String(u.user.upi) === String(toAccountNumber) ||
-                        String(u.user.email) === String(toAccountNumber)
+                        (() => {
+                            const inputDigits = String(toAccountNumber).replace(/\D/g, '');
+                            const storedDigits = String(u.user.mobile).replace(/\D/g, '');
+                            return inputDigits.length >= 10 && (storedDigits === inputDigits || storedDigits.endsWith(inputDigits));
+                        })() ||
+                        String(u.user.upi).toLowerCase() === String(toAccountNumber).toLowerCase() ||
+                        String(u.user.email).toLowerCase() === String(toAccountNumber).toLowerCase()
                     ))
                 );
 
@@ -402,7 +439,10 @@ export function BankingProvider({ children }) {
                     // Credit Recipient (Direct Storage Update)
                     if (recipient.accounts) {
                         // Try to find specific account, otherwise default to first account (for Phone/UPI transfers)
-                        let acc = recipient.accounts.find(a => a.accountNumber === toAccountNumber);
+                        let acc = recipient.accounts.find(a =>
+                            String(a.accountDetails?.accountNumber) === String(toAccountNumber) ||
+                            String(a.accountNumber) === String(toAccountNumber)
+                        );
                         if (!acc && recipient.accounts.length > 0) {
                             acc = recipient.accounts[0];
                         }
@@ -454,10 +494,8 @@ export function BankingProvider({ children }) {
 
     const getTotalBalance = () => state.accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
 
-    // Legacy helper for components expecting specific transaction format
     const getAccountTransactions = (accountId) => state.transactions;
 
-    // MPIN Verification
     const verifyAccountMpin = (accountId, mpin) => {
         const account = state.accounts.find(a => a.id === accountId);
         console.log("Verify MPIN Debug:", {
@@ -468,7 +506,6 @@ export function BankingProvider({ children }) {
 
         if (!account) return false;
 
-        // Strict equality check
         return String(account.mpin) === String(mpin);
     };
 
@@ -485,6 +522,29 @@ export function BankingProvider({ children }) {
         dispatch({ type: ACTIONS.LOGOUT_ACCOUNT });
     };
 
+    const updateAccountMpin = (accountId, newMpin) => {
+        if (!newMpin || String(newMpin).length !== 4 || isNaN(newMpin)) {
+            return { success: false, error: 'MPIN must be a 4-digit number' };
+        }
+
+        const account = state.accounts.find(a => a.id === accountId);
+        if (!account) return { success: false, error: 'Account not found' };
+
+        dispatch({
+            type: ACTIONS.UPDATE_ACCOUNT_MPIN,
+            payload: { accountId, newMpin }
+        });
+        return { success: true, message: 'MPIN updated successfully' };
+    };
+
+    const toggleAccountStatus = (accountId) => {
+        const account = state.accounts.find(a => a.id === accountId);
+        if (!account) return { success: false, error: 'Account not found' };
+
+        dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_STATUS, payload: { accountId } });
+        return { success: true, message: `Account ${account.status === 'active' ? 'Deactivated' : 'Activated'} Successfully` };
+    };
+
     const value = {
         state,
         dispatch,
@@ -497,7 +557,9 @@ export function BankingProvider({ children }) {
         getAccountTransactions,
         verifyAccountMpin,
         loginAccount,
-        logoutAccount
+        logoutAccount,
+        updateAccountMpin,
+        toggleAccountStatus
     };
 
     return (

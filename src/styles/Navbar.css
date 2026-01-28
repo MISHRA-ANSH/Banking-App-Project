@@ -199,7 +199,7 @@
     font-size: 14px;
     font-weight: 600;
     color: #ffffff;
-    max-width: 120px;
+    max-width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -354,84 +354,65 @@
     }
 }
 
-/* Bottom Navigation (Hidden by default) */
-.bottom-navbar {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    background: white;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-    z-index: 1050;
-    border-top: 1px solid #e0e0e0;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-.dark-mode .bottom-navbar {
-    background: #1e1e2f;
-    border-color: #333;
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-.bottom-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    gap: 4px;
-    color: #64748b;
-    font-size: 10px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 8px;
-    flex: 1;
-    transition: all 0.2s ease;
-}
-
-.dark-mode .bottom-nav-item {
-    color: #a0a0b0;
-}
-
-.bottom-nav-item.active {
-    color: #2563eb;
-}
-
-.dark-mode .bottom-nav-item.active {
-    color: #60a5fa;
-}
-
-.bottom-nav-icon {
-    font-size: 20px;
-    margin-bottom: 2px;
-}
-
-@media (max-width: 850px) {
+@media (max-width: 480px) {
     .navbar-container {
-        padding: 0 20px;
+        padding: 0 12px;
+        height: 70px;
+        gap: 8px;
+        /* Reduce gap */
     }
 
-    /* Hide Desktop Nav */
-    .navbar-nav {
-        display: none !important;
+    .top-navbar {
+        height: 70px;
     }
 
-    /* Show Bottom Nav */
-    .bottom-navbar {
+    .logo-text {
+        font-size: 16px;
+        /* Smaller logo text */
+    }
+
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+        gap: 8px;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+
+    /* Show profile info on mobile but smaller */
+    .profile-info {
         display: flex;
+        max-width: 140px;
+        /* Give more space */
+        flex-shrink: 1;
+        min-width: 0;
     }
 
-    /* Hide Mobile Menu Toggle since we have tabs */
-    .mobile-menu-toggle {
+    .profile-name {
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-role {
         display: none;
     }
 
+    .profile-btn {
+        padding: 4px 10px 4px 4px;
+        border-radius: 50px;
+        gap: 6px;
+    }
+}
+
+
+@media (max-width: 360px) {
     .profile-info {
         display: none;
     }

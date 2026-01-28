@@ -23,6 +23,50 @@
   min-height: 90vh;
 }
 
+@media (max-width: 1024px) {
+  .accounts-cards-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-container {
+    display: none;
+    /* Hide sidebar on tablet/mobile */
+  }
+
+  .main-content-wrapper {
+    padding: 24px;
+    padding-bottom: 90px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content-wrapper {
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+
+  .stats-overview {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stat-overview-card {
+    padding: 16px;
+  }
+
+  .accounts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+}
+
 /* Sidebar Styles */
 .sidebar-container {
   background: #ffffff;
@@ -206,25 +250,73 @@
 }
 
 /* Stats Overview Overlay Style */
+/* Stats Overview Overlay Style */
 .stats-overview {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
   margin-bottom: 40px;
-  background: transparent;
-  padding: 0;
-  border: none;
 }
 
 .stat-overview-card {
   background: white;
-  border: none;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f1f5f9;
 }
 
+.stat-overview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+/* Neutral Design - No color variants */
+.stat-icon-overview {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.stat-content-overview {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-content-overview h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value-overview {
+  margin: 4px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Dark Mode Overrides */
 .dark-mode .stat-overview-card {
   background: #1e293b;
-  border: 1px solid #334155;
+  border-color: #334155;
+  box-shadow: none;
 }
 
 .dark-mode .stat-content-overview h4 {
@@ -233,6 +325,11 @@
 
 .dark-mode .stat-value-overview {
   color: #f8fafc;
+}
+
+.dark-mode .stat-icon-overview {
+  background: #0f172a;
+  color: #94a3b8;
 }
 
 /* Account Cards Dark Mode */
@@ -1362,4 +1459,96 @@
   .card-number {
     font-size: 18px;
   }
+}
+
+/* Toast Notification Styles */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.3s ease-out forwards;
+  pointer-events: auto;
+  min-width: 300px;
+  border-left: 4px solid #3b82f6;
+  max-width: 400px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast.success {
+  border-left-color: #10b981;
+}
+
+.toast.error {
+  border-left-color: #ef4444;
+}
+
+.toast-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast.success .toast-icon {
+  color: #10b981;
+}
+
+.toast.error .toast-icon {
+  color: #ef4444;
+}
+
+.toast-message {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.toast-close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.toast-close:hover {
+  color: #64748b;
+}
+
+.dark-mode .toast {
+  background: #1e293b;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .toast-message {
+  color: #f1f5f9;
 }

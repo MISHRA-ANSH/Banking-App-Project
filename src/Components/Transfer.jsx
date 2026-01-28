@@ -53,8 +53,29 @@ import {
   FiMail,
   FiDatabase,
   FiChevronRight,
-  FiRepeat
+  FiRepeat,
+  FiCheckCircle
 } from "react-icons/fi";
+
+// Toast Component
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className={`toast ${type}`}>
+      <div className="toast-icon">
+        {type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
+      </div>
+      <div className="toast-message">{message}</div>
+      <button className="toast-close" onClick={onClose}>
+        <FiX />
+      </button>
+    </div>
+  );
+};
 
 function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use context
   /* Updated to use Context Data */
@@ -78,7 +99,20 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
   const [isPinProcessing, setIsPinProcessing] = useState(false);
   const [receiverData, setReceiverData] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
+  /* Removed Duplicate Declarations */
   const pinInputRefs = useRef([]);
+
+  // Toast State
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   useEffect(() => {
     // Set default source account
@@ -344,14 +378,26 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
 
       // Find receiver in all users (Robust Lookup)
       const receiver = allUsers.find(u =>
-        // 1. Check specific account number
-        (u.accounts && u.accounts.some(a => String(a.accountDetails?.accountNumber) === cleanIdentifier)) ||
+        // 1. Check specific account number in 'accounts' array (Handles both Nested & Normalized)
+        (u.accounts && u.accounts.some(a =>
+          String(a.accountDetails?.accountNumber) === cleanIdentifier ||
+          String(a.accountNumber) === cleanIdentifier
+        )) ||
+        // 2. Check legacy 'account' object
         (u.account && String(u.account.accountNumber) === cleanIdentifier) ||
-        // 2. Check User Details (Mobile/UPI/Email) - Only if not looking for specific account number type (simplified for now)
+        // 3. Check User Details (Mobile/UPI/Email)
         (u.user && (
-          String(u.user.mobile) === cleanIdentifier ||
-          String(u.user.upi) === cleanIdentifier ||
-          String(u.user.email) === cleanIdentifier
+          // Mobile: Flexible matching (Strip non-digits, check if stored number contains input)
+          (() => {
+            const inputDigits = cleanIdentifier.replace(/\D/g, '');
+            const storedDigits = String(u.user.mobile).replace(/\D/g, '');
+            // Match if exact match OR if stored number ends with input (handling +91 prefix)
+            return inputDigits.length >= 10 && (storedDigits === inputDigits || storedDigits.endsWith(inputDigits));
+          })() ||
+          // UPI: Case insensitive
+          String(u.user.upi).toLowerCase() === cleanIdentifier.toLowerCase() ||
+          // Email: Case insensitive
+          String(u.user.email).toLowerCase() === cleanIdentifier.toLowerCase()
         ))
       );
 
@@ -484,19 +530,19 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "NEFT/RTGS",
         desc: "Scheduled transfers",
         icon: <FiFileText />,
-        action: () => alert("NEFT/RTGS feature coming soon!")
+        action: () => addToast("NEFT/RTGS feature coming soon!", "error")
       },
       {
         label: "Split Payment",
         desc: "Share bills with friends",
         icon: <FiUser />,
-        action: () => alert("Split payment feature coming soon!")
+        action: () => addToast("Split payment feature coming soon!", "error")
       },
       {
         label: "International",
         desc: "Send money abroad",
         icon: <FiGlobe />,
-        action: () => alert("International transfer feature coming soon!")
+        action: () => addToast("International transfer feature coming soon!", "error")
       }
     ],
     wallet: [
@@ -504,37 +550,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "View Balance",
         desc: "Check wallet balance",
         icon: <FiCreditCard />,
-        action: () => alert("Balance: ₹" + (state.accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0) || 0))
+        action: () => addToast("Balance: ₹" + (state.accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0) || 0), "success")
       },
       {
         label: "Add Money",
         desc: "Load money to wallet",
         icon: <FiPlus />,
-        action: () => alert("Add money feature")
+        action: () => addToast("Add money feature coming soon", "error")
       },
       {
         label: "Send to Bank",
         desc: "Transfer to bank account",
         icon: <FiShare2 />,
-        action: () => alert("Send to bank feature")
+        action: () => addToast("Send to bank feature coming soon", "error")
       },
       {
         label: "Transaction History",
         desc: "View all transactions",
         icon: <FiFileText />,
-        action: () => alert("Transaction history")
+        action: () => addToast("Transaction history feature coming soon", "error")
       },
       {
         label: "Set Limits",
         desc: "Daily spending limits",
         icon: <FiLock />,
-        action: () => alert("Set limits feature")
+        action: () => addToast("Set limits feature coming soon", "error")
       },
       {
         label: "Wallet Offers",
         desc: "Exclusive deals & cashback",
         icon: <FiGift />,
-        action: () => alert("View offers")
+        action: () => addToast("Offers feature coming soon", "error")
       }
     ],
     recharge: [
@@ -542,37 +588,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "Mobile",
         desc: "Prepaid & Postpaid",
         icon: <FiSmartphone />,
-        action: () => alert("Mobile recharge")
+        action: () => addToast("Mobile recharge feature coming soon", "error")
       },
       {
         label: "DTH",
         desc: "TV Recharge",
         icon: <FiMaximize />,
-        action: () => alert("DTH recharge")
+        action: () => addToast("DTH recharge feature coming soon", "error")
       },
       {
         label: "Electricity",
         desc: "Pay electricity bill",
         icon: <FiHome />,
-        action: () => alert("Electricity bill")
+        action: () => addToast("Electricity bill feature coming soon", "error")
       },
       {
         label: "Broadband",
         desc: "Internet bills",
         icon: <FiWifi />,
-        action: () => alert("Broadband bill")
+        action: () => addToast("Broadband bill feature coming soon", "error")
       },
       {
         label: "Water Bill",
         desc: "Municipal water charges",
         icon: <FiDroplet />,
-        action: () => alert("Water bill payment")
+        action: () => addToast("Water bill feature coming soon", "error")
       },
       {
         label: "Gas Cylinder",
         desc: "LPG booking & payment",
         icon: <FiPackage />,
-        action: () => alert("Gas booking")
+        action: () => addToast("Gas booking feature coming soon", "error")
       }
     ],
     bills: [
@@ -580,37 +626,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "Credit Card",
         desc: "Pay credit card bills",
         icon: <FiCreditCard />,
-        action: () => alert("Credit card payment")
+        action: () => addToast("Credit card payment feature coming soon", "error")
       },
       {
         label: "Utility",
         desc: "Water, Gas & more",
         icon: <FiSettings />,
-        action: () => alert("Utility bills")
+        action: () => addToast("Utility bills feature coming soon", "error")
       },
       {
         label: "Education",
         desc: "School & College fees",
         icon: <FiBookOpen />,
-        action: () => alert("Education fees")
+        action: () => addToast("Education fees feature coming soon", "error")
       },
       {
         label: "Subscription",
         desc: "OTT & other services",
         icon: <FiVideo />,
-        action: () => alert("Subscription payment")
+        action: () => addToast("Subscription payment feature coming soon", "error")
       },
       {
         label: "Society Maintenance",
         desc: "Apartment charges",
         icon: <FiHome />,
-        action: () => alert("Maintenance payment")
+        action: () => addToast("Maintenance payment feature coming soon", "error")
       },
       {
         label: "Municipal Tax",
         desc: "Property tax payment",
         icon: <FiBriefcase />,
-        action: () => alert("Tax payment")
+        action: () => addToast("Tax payment feature coming soon", "error")
       }
     ],
     loans: [
@@ -618,37 +664,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "Apply Now",
         desc: "Quick loan approval",
         icon: <FiDollarSign />,
-        action: () => alert("Apply for loan")
+        action: () => addToast("Apply for loan feature coming soon", "error")
       },
       {
         label: "EMI Payments",
         desc: "Pay loan installments",
         icon: <FiCalendar />,
-        action: () => alert("Pay EMI")
+        action: () => addToast("Pay EMI feature coming soon", "error")
       },
       {
         label: "Check Eligibility",
         desc: "Pre-approved offers",
         icon: <FiBarChart2 />,
-        action: () => alert("Check eligibility")
+        action: () => addToast("Check eligibility feature coming soon", "error")
       },
       {
         label: "Loan Statement",
         desc: "View loan details",
         icon: <FiFileText />,
-        action: () => alert("View statement")
+        action: () => addToast("View statement feature coming soon", "error")
       },
       {
         label: "Foreclosure",
         desc: "Close loan early",
         icon: <FiCheckSquare />,
-        action: () => alert("Foreclosure option")
+        action: () => addToast("Foreclosure option coming soon", "error")
       },
       {
         label: "Top-up Loan",
         desc: "Increase loan amount",
         icon: <FiTrendingUp />,
-        action: () => alert("Top-up loan")
+        action: () => addToast("Top-up loan feature coming soon", "error")
       }
     ],
     insurance: [
@@ -656,37 +702,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "Health Insurance",
         desc: "Medical coverage",
         icon: <FiHeart />,
-        action: () => alert("Health insurance")
+        action: () => addToast("Health insurance feature coming soon", "error")
       },
       {
         label: "Motor Insurance",
         desc: "Car & Bike",
         icon: <FiTruck />,
-        action: () => alert("Vehicle insurance")
+        action: () => addToast("Vehicle insurance feature coming soon", "error")
       },
       {
         label: "Life Insurance",
         desc: "Term plans",
         icon: <FiUser />,
-        action: () => alert("Life insurance")
+        action: () => addToast("Life insurance feature coming soon", "error")
       },
       {
         label: "Travel Insurance",
         desc: "International travel",
         icon: <FiGlobe />,
-        action: () => alert("Travel insurance")
+        action: () => addToast("Travel insurance feature coming soon", "error")
       },
       {
         label: "Home Insurance",
         desc: "Property protection",
         icon: <FiHome />,
-        action: () => alert("Home insurance")
+        action: () => addToast("Home insurance feature coming soon", "error")
       },
       {
         label: "Renew Policy",
         desc: "Renew existing policy",
         icon: <FiRefreshCcw />,
-        action: () => alert("Renew insurance")
+        action: () => addToast("Renew insurance feature coming soon", "error")
       }
     ],
     mutual: [
@@ -694,37 +740,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "Invest Now",
         desc: "Start SIP or lumpsum",
         icon: <FiTrendingUp />,
-        action: () => alert("Invest now")
+        action: () => addToast("Invest now feature coming soon", "error")
       },
       {
         label: "Portfolio",
         desc: "View investments",
         icon: <FiPieChart />,
-        action: () => alert("View portfolio")
+        action: () => addToast("View portfolio feature coming soon", "error")
       },
       {
         label: "Top Funds",
         desc: "Best performing funds",
         icon: <FiStar />,
-        action: () => alert("Top funds")
+        action: () => addToast("Top funds feature coming soon", "error")
       },
       {
         label: "Calculator",
         desc: "SIP & returns calculator",
         icon: <FiHelpCircle />,
-        action: () => alert("Calculator")
+        action: () => addToast("Calculator feature coming soon", "error")
       },
       {
         label: "Systematic Withdrawal",
         desc: "Regular income plan",
         icon: <FiDollarSign />,
-        action: () => alert("Withdrawal plan")
+        action: () => addToast("Withdrawal plan feature coming soon", "error")
       },
       {
         label: "Switch Funds",
         desc: "Change your investment",
         icon: <FiRefreshCcw />,
-        action: () => alert("Switch funds")
+        action: () => addToast("Switch funds feature coming soon", "error")
       }
     ],
     travel: [
@@ -732,37 +778,37 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "Book Flights",
         desc: "Domestic & International",
         icon: <FiGlobe />,
-        action: () => alert("Book flights")
+        action: () => addToast("Book flights feature coming soon", "error")
       },
       {
         label: "Hotels",
         desc: "Resorts & Stays",
         icon: <FiHome />,
-        action: () => alert("Book hotels")
+        action: () => addToast("Book hotels feature coming soon", "error")
       },
       {
         label: "Trains",
         desc: "IRCTC booking",
         icon: <FiTruck />,
-        action: () => alert("Book trains")
+        action: () => addToast("Book trains feature coming soon", "error")
       },
       {
         label: "Bus Tickets",
         desc: "Intercity travel",
         icon: <FiMap />,
-        action: () => alert("Book buses")
+        action: () => addToast("Book buses feature coming soon", "error")
       },
       {
         label: "Car Rental",
         desc: "Self-drive & chauffeur",
         icon: <FiTruck />,
-        action: () => alert("Rent a car")
+        action: () => addToast("Rent a car feature coming soon", "error")
       },
       {
         label: "Travel Packages",
         desc: "Complete holiday plans",
         icon: <FiBriefcase />,
-        action: () => alert("Travel packages")
+        action: () => addToast("Travel packages feature coming soon", "error")
       }
     ],
     payments: [
@@ -770,37 +816,38 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
         label: "AutoPay",
         desc: "Setup automatic payments",
         icon: <FiSettings />,
-        action: () => alert("Setup AutoPay")
+        action: () => addToast("Setup AutoPay feature coming soon", "error")
       },
       {
         label: "Payment History",
         desc: "Past transactions",
         icon: <FiFileText />,
-        action: () => alert("View history")
+        action: () => addToast("View history feature coming soon", "error")
       },
       {
         label: "Manage Limits",
         desc: "Set transaction limits",
         icon: <FiLock />,
-        action: () => alert("Manage limits")
+        action: () => addToast("Manage limits feature coming soon", "error")
       },
       {
         label: "Beneficiaries",
+
         desc: "Saved contacts",
         icon: <FiUser />,
-        action: () => alert("Manage beneficiaries")
+        action: () => addToast("Manage beneficiaries feature coming soon", "error")
       },
       {
         label: "Schedule Payment",
         desc: "Future dated payments",
         icon: <FiCalendar />,
-        action: () => alert("Schedule payment")
+        action: () => addToast("Schedule payment feature coming soon", "error")
       },
       {
         label: "Payment Reminders",
         desc: "Never miss a due date",
         icon: <FiBell />,
-        action: () => alert("Set reminders")
+        action: () => addToast("Set reminders feature coming soon", "error")
       }
     ],
     cards: [
@@ -1040,10 +1087,10 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
             <div className="content-header">
               <h3>{categories.find(c => c.id === activeCategory)?.label}</h3>
               <div className="content-actions">
-                <button className="action-btn btn-secondary">
+                <button className="transfer-action-btn btn-secondary">
                   <FiShare2 /> Share
                 </button>
-                <button className="action-btn btn-primary">
+                <button className="transfer-action-btn btn-primary">
                   <FiPlus /> Add New
                 </button>
               </div>
@@ -1375,6 +1422,17 @@ function Transfer({ darkMode }) { // Accepting darkMode prop if passed, or use c
             )}
           </div>
         </div>
+      </div>
+      {/* Toast Container */}
+      <div className="toast-container">
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
       </div>
     </div>
   );

@@ -370,8 +370,8 @@ function Dashboard({ darkMode, setDarkMode }) {
     loadAPI();
     return () => { isMounted = false; };
   }, []);
-
-  // Load recent beneficiaries from localStorage
+   
+   //Load Recent Benefiacries
   useEffect(() => {
     const loadBeneficiaries = () => {
       const stored = localStorage.getItem("recent_beneficiaries");

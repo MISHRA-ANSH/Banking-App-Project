@@ -1,6 +1,26 @@
 import "../styles/auth.css";
-import { FiUser, FiLock, FiCreditCard, FiHash, FiDollarSign, FiSmartphone, FiMail, FiBriefcase, FiKey } from "react-icons/fi";
-import { useState } from "react";
+import { FiUser, FiLock, FiCreditCard, FiHash, FiDollarSign, FiSmartphone, FiMail, FiBriefcase, FiKey, FiCheckCircle, FiAlertCircle, FiX } from "react-icons/fi";
+import { useState, useEffect } from "react";
+
+// Toast Component
+const Toast = ({ message, type, onClose }) => {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 3000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    return (
+        <div className={`toast ${type}`}>
+            <div className="toast-icon">
+                {type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
+            </div>
+            <div className="toast-message">{message}</div>
+            <button className="toast-close" onClick={onClose}>
+                <FiX />
+            </button>
+        </div>
+    );
+};
 
 function SignUp({ onLogin }) {
     const [formData, setFormData] = useState({
@@ -19,6 +39,18 @@ function SignUp({ onLogin }) {
     const [step, setStep] = useState(1);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // Toast State
+    const [toasts, setToasts] = useState([]);
+
+    const addToast = (message, type = 'success') => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -84,7 +116,8 @@ function SignUp({ onLogin }) {
             const usersJSON = localStorage.getItem("epic_all_users") || "[]";
             let users = JSON.parse(usersJSON);
 
-            const exists = users.some(u => u.user?.crn === formData.crn);
+            const cleanCRN = formData.crn.trim();
+            const exists = users.some(u => u.user?.crn === cleanCRN);
             if (exists) {
                 setError("User with this CRN already exists");
                 setLoading(false);
@@ -92,17 +125,17 @@ function SignUp({ onLogin }) {
                 return;
             }
 
-            // Create new user object matching the requested JSON structure
             const newUser = {
                 user: {
-                    name: formData.name,
-                    customerId: `CUST${Math.floor(100000 + Math.random() * 900000)}`, // Generate Customer ID
-                    crn: formData.crn,
-                    mobile: formData.mobile,
-                    email: formData.email,
+                    name: formData.name.trim(),
+                    customerId: `CUST${Math.floor(100000 + Math.random() * 900000)}`,
+                    crn: cleanCRN,
+                    mobile: formData.mobile.replace(/\s/g, ''),
+                    email: formData.email.trim().toLowerCase(),
                     password: formData.password,
-                    upi: `${formData.name.toLowerCase().replace(/\s/g, '')}@okepic`, // Generate UPI ID
-                    mpin: formData.mpin // This is the App Login PIN
+                    upi: `${formData.name.trim().toLowerCase().replace(/\s/g, '')}@okepic`,
+
+                    mpin: formData.mpin
                 },
                 accounts: [
                     {
@@ -110,7 +143,7 @@ function SignUp({ onLogin }) {
                             bankName: formData.bankName,
                             accountType: formData.accountType,
                             accountNumber: Math.floor(100000000000 + Math.random() * 900000000000).toString(), // 12 digits
-                            mpin: formData.transactionPin // Account specific Transaction PIN
+                            mpin: formData.transactionPin
                         },
                         balance: {
                             available: parseFloat(formData.initialBalance) || 0,
@@ -128,8 +161,11 @@ function SignUp({ onLogin }) {
             localStorage.setItem("epic_all_users", JSON.stringify(users));
 
             // Success
-            alert("Account created successfully! Please login.");
-            if (onLogin) onLogin();
+            addToast('Account created successfully!', 'success');
+            setTimeout(() => {
+                if (onLogin) onLogin();
+            }, 2000);
+
 
         } catch (err) {
             console.error("Signup error:", err);
@@ -150,6 +186,12 @@ function SignUp({ onLogin }) {
 
     return (
         <div className="auth-container">
+            {/* Toast Container */}
+            <div className="toast-container">
+                {toasts.map(toast => (
+                    <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
+                ))}
+            </div>
             <div className="auth-content">
                 <div className="auth-left">
                     <div className="auth-brand">

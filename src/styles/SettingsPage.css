@@ -992,7 +992,12 @@
 }
 
 /* Responsive Design */
+/* Mobile Fixes for Settings */
 @media (max-width: 1024px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+
   .settings-layout {
     flex-direction: column;
   }
@@ -1006,24 +1011,36 @@
   .settings-nav {
     display: flex;
     overflow-x: auto;
-    padding: 0;
+    padding: 10px;
+    gap: 10px;
   }
 
   .settings-nav-item {
-    min-width: 150px;
-    justify-content: center;
+    width: auto;
+    white-space: nowrap;
+    border-radius: 8px;
+    padding: 8px 16px;
+  }
+
+  .settings-nav-item.active::before {
+    display: none;
   }
 
   .settings-info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .settings-sidebar-footer {
+    flex-direction: row;
+    justify-content: space-between;
   }
 }
 
 @media (max-width: 768px) {
   .settings-header {
     flex-direction: column;
-    gap: 20px;
     text-align: center;
+    gap: 16px;
     padding: 20px;
   }
 
@@ -1034,43 +1051,34 @@
   .settings-security-grid,
   .settings-notification-grid,
   .settings-preference-grid,
-  .settings-data-grid,
-  .settings-plans-grid {
+  .settings-data-grid {
     grid-template-columns: 1fr;
   }
 
-  .settings-session-item,
-  .settings-invoice-item {
+  .settings-session-item {
     flex-direction: column;
-    gap: 15px;
     align-items: flex-start;
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .settings-edit-mode {
-    flex-direction: column;
-    gap: 15px;
+  .settings-wrapper {
+    border-radius: 0;
+    box-shadow: none;
   }
 
-  .settings-edit-actions {
-    justify-content: center;
-  }
-
-  .settings-theme-options {
-    flex-direction: column;
+  .settings-container {
+    padding: 0;
+    padding-bottom: 80px;
+    /* Navbar space */
   }
 
   .settings-header h1 {
     font-size: 24px;
   }
 
-  .settings-section-header h3 {
-    font-size: 20px;
-  }
-
-  .settings-notification-item {
-    flex-direction: column;
-    align-items: flex-start;
+  .settings-user-profile {
+    padding: 0 20px;
   }
 }

@@ -2,12 +2,46 @@ import React, { useEffect, useState } from "react";
 import { useBanking } from "../context/BankingContext";
 import "../styles/Transactions.css";
 
+import { FiCheckCircle, FiAlertCircle, FiX } from "react-icons/fi";
+
+// Toast Component
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className={`toast ${type}`}>
+      <div className="toast-icon">
+        {type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
+      </div>
+      <div className="toast-message">{message}</div>
+      <button className="toast-close" onClick={onClose}>
+        <FiX />
+      </button>
+    </div>
+  );
+};
+
 const TransactionPage = ({ onBack, darkMode }) => {
   const { state } = useBanking();
   const [transactions, setTransactions] = useState([]);
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
   const [accounts, setAccounts] = useState([]);
+
+  // Toast State
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   // 🔥 Load transactions from banking context or logged user
   useEffect(() => {
@@ -61,7 +95,7 @@ const TransactionPage = ({ onBack, darkMode }) => {
 
   // 📤 Export CSV (same logic)
   const exportCSV = () => {
-    if (!filteredTransactions.length) return alert("No data");
+    if (!filteredTransactions.length) return addToast("No data to export", "error");
 
     const headers = ["Date", "Title", "Type", "Amount"];
     const rows = filteredTransactions.map((t) => [
@@ -228,6 +262,18 @@ const TransactionPage = ({ onBack, darkMode }) => {
             </>
           )}
         </div>
+      </div>
+
+      {/* Toast Container */}
+      <div className="toast-container">
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
       </div>
     </div>
   );
